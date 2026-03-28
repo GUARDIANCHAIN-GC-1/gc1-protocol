@@ -1,214 +1,303 @@
-# GC-1 Protocol
+# GC-1 Protocol — Cryptographic Evidence Infrastructure for AI Governance
 
-**Cryptographic Evidence Infrastructure for AI Governance**
+> **No cap. Verified.**
 
-GC-1 is a production cryptographic evidence infrastructure that transforms AI governance from policy documentation into independently verifiable proof. Every governance decision, every compliance event, every human authorization is cryptographically sealed, independently timestamped, and anchored to multiple public blockchains.
+GC-1 is the first production cryptographic evidence infrastructure for AI accountability. It proves what happened, what didn't happen, and what was actively prevented from happening — permanently, independently, and without storing any underlying content.
 
-**Production Status:** 21,000+ governance capsules sealed across 6 independent public blockchains.
+**Created by Troy Anthony Cronin, GuardianChain LLC ([guardianchain.io](https://guardianchain.io))**
+**Operational since April 2025 · 64,000+ sealed records · 6 blockchains · 5 cloud storage providers**
 
 ---
 
-## The Problem
+## What GC-1 Proves
 
-Every AI governance platform today produces self-reported evidence. The company deploying AI writes its own compliance logs, generates its own risk assessments, and stores the results in databases it controls. When a regulator, auditor, or attorney asks for evidence, the company hands them documents the company created about itself.
+| Proof Type | What It Demonstrates | How It Works |
+|---|---|---|
+| **Capsule** | Something happened | SHA-256 hash + Ed25519 signature + blockchain anchor |
+| **Proof of Restraint** | Something was actively prevented | Cryptographic evidence of governed refusal |
+| **Silent Witness** | Something did NOT happen | Merkle-based proof of absence |
+| **Living Proof** | The system continuously governs itself | 15 proof types, hourly verification, blockchain-anchored |
+| **Infrastructure Atomicity** | All 11 vendors committed as one | Dispatch Manifest + Attestation Hash binding 6 chains + 5 storage |
 
-This creates a fundamental trust problem: the evidence is only as trustworthy as the entity that produced it. Logs can be edited. Timestamps can be backdated. Records can be deleted. There is no way for a third party to independently verify that governance evidence is authentic, complete, and unmodified.
-
-GC-1 solves this by making governance evidence **independently verifiable** — anchored to public infrastructure that nobody controls.
-
-## How It Works
-
-### Capsule Pipeline
-
-Every governance event flows through the GC-1 capsule pipeline:
-
-1. **Hash** — The governance event (decision, authorization, compliance check) is SHA-256 hashed. GC-1 receives only the hash, never the original content (non-custodial).
-2. **Sign** — The hash is signed with Ed25519 digital signatures using a three-tier key hierarchy (root, certificate, operational).
-3. **Timestamp** — An independent RFC 3161 Timestamp Authority (not controlled by GC-1) issues a legally recognized timestamp proving when the hash existed.
-4. **Anchor** — The signed, timestamped hash is submitted to 6 independent public blockchains simultaneously: Base, Polygon, Ethereum, Optimism, Arbitrum, and Arweave.
-5. **Certify** — When sufficient blockchain confirmations arrive, the capsule is sealed with an Ed25519-signed certificate.
-
-### Verification
-
-Any third party can verify a GC-1 capsule independently:
-
-- Check the SHA-256 hash against the original document
-- Verify the Ed25519 signature using the public key
-- Confirm the RFC 3161 timestamp with the issuing authority
-- Look up the blockchain anchors on any public block explorer (BaseScan, PolygonScan, Etherscan, Arbiscan, ViewBlock)
-
-**No GC-1 cooperation required.** The evidence is verifiable even if GuardianChain ceases to exist.
+---
 
 ## Architecture
 
-### Anchor Class System
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    GC-1 Evidence Pipeline                     │
+│                                                               │
+│  Content → SHA-256 Hash → Capsule → Governance Rails (45)    │
+│                                         │                     │
+│                              ┌──────────┴──────────┐         │
+│                              │  Dispatch Manifest   │         │
+│                              │  (signed BEFORE      │         │
+│                              │   any vendor call)   │         │
+│                              └──────────┬──────────┘         │
+│                    ┌────────────────────┼────────────────┐   │
+│                    ▼                    ▼                ▼   │
+│           6 Blockchains         5 Cloud Storage    RFC 3161  │
+│           ─────────────         ──────────────     Timestamp │
+│           Base                  Cloudflare R2                │
+│           Polygon               AWS S3                       │
+│           Ethereum              Backblaze B2                 │
+│           Optimism              Pinata IPFS                  │
+│           Arbitrum              Arweave                      │
+│           Arweave                                            │
+│                    │                    │                     │
+│                    └────────┬───────────┘                     │
+│                             ▼                                 │
+│                  Infrastructure Attestation Hash              │
+│                  (SHA-256 binding ALL vendor results)         │
+│                             │                                 │
+│                             ▼                                 │
+│                    Completion Receipt                         │
+│                    (Ed25519-signed, vendor coverage N/11)     │
+│                             │                                 │
+│                             ▼                                 │
+│                      Ed25519 Certificate                      │
+│                      (independently verifiable)               │
+└─────────────────────────────────────────────────────────────┘
+```
 
-GC-1 supports three tiers of evidence anchoring:
+### Non-Custodial by Design
 
-| Anchor Class | Chains | Storage | Use Case |
-|---|---|---|---|
-| `SOVEREIGN_TIER_1` | All 6 blockchains + all 5 storage providers | Full redundancy | Defense, legal, autonomous systems, internal governance |
-| `INSTITUTIONAL_REGULATED` | 3 blockchains + 3 storage providers | Balanced | Healthcare, financial services, regulated industries |
-| `PUBLIC_PROOF` | 2 blockchains + 2 storage providers | Cost-optimized | Research integrity, academic, general proof |
+GC-1 stores **SHA-256 hashes only**. The original content is never transmitted, never stored, never seen by GuardianChain. Verification works by comparing a locally-computed hash against the blockchain-anchored hash. If they match, the content is authentic and unmodified since the timestamp.
 
-### Constitutional Enforcement
+This means:
+- **GDPR compatible** — no personal data stored (hashes are not personal data under GDPR Recital 26)
+- **Vendor-survivable** — proof persists on public blockchains even if GuardianChain ceases to exist
+- **Independently verifiable** — any third party can verify without trusting or contacting GuardianChain
 
-GC-1 operates under four constitutional constraints enforced by code, not policy:
+---
 
-- **FAIL_CLOSED** — Every error halts processing. No silent failures. No degraded evidence.
-- **ZERO_AUTONOMY** — AI is read-only verifier. Cannot write to truth records. Cannot override human decisions.
-- **NON_CUSTODIAL** — GC-1 never stores original content. Only cryptographic hashes. Customer data is architecturally inaccessible.
-- **HUMAN_FINALITY** — No system overrides human authority. Every autonomous action requires prior human authorization.
+## Cap Block Format
 
-These constraints are enforced at 1,888+ code enforcement points verified by automated testing.
+A **Cap Block** is a multi-format embeddable proof artifact. It contains everything needed to independently verify a document's provenance.
 
-### Governance Rails
+### 5 Formats
 
-43 governance rails evaluate every capsule before certification. Each rail enforces a specific governance requirement. If any rail fails, the capsule is rejected (FAIL_CLOSED) and a signed Proof of Restraint is generated — cryptographic evidence that governance *prevented* an action.
+| Format | Use Case | Example |
+|---|---|---|
+| **Markdown** | Papers, READMEs, blog posts | Embedded at document footer |
+| **JSON-LD** | Web pages, LLM parsing, APIs | Structured semantic data |
+| **HTML Meta Tags** | Web pages, search engines | `<meta>` tags in `<head>` |
+| **PDF Footer** | Academic papers, legal documents | Rendered in PDF margin |
+| **Git Comment** | GitHub repos, CI/CD pipelines | Parseable by crawlers |
+
+### Cap Block Example (Markdown)
+
+```markdown
+<!-- GC1-CAP-BEGIN -->
+🧢 GC-1 CAP — No cap. Verified.
+Cap ID:   GC1-00004721
+Hash:     sha256:a3f8c9d2e1b4...7f6e5d4c3b2a
+Capped:   2026-03-28T20:30:34Z
+Chains:   Base ✓ | Polygon ✓ | Ethereum ✓ | Optimism ✓ | Arbitrum ✓ | Arweave ✓
+Storage:  R2 ✓ | S3 ✓ | B2 ✓ | IPFS ✓ | Arweave ✓
+Proof:    8.2/10
+Verify:   https://guardianchain.io/verify/GC1-00004721
+
+Capped with GC-1 by GuardianChain LLC (guardianchain.io)
+Created by Troy Anthony Cronin. Operational since 2025.
+<!-- GC1-CAP-END -->
+```
+
+### Cap Block Example (JSON-LD)
+
+```json
+{
+  "@context": "https://guardianchain.io/cap/v1",
+  "@type": "gc1:CapBlock",
+  "gc1:capId": "GC1-00004721",
+  "gc1:contentHash": "sha256:a3f8c9d2e1b4...7f6e5d4c3b2a",
+  "gc1:cappedAt": "2026-03-28T20:30:34Z",
+  "gc1:anchorClass": "SOVEREIGN_TIER_1",
+  "gc1:chains": ["base", "polygon", "ethereum", "optimism", "arbitrum", "arweave"],
+  "gc1:storage": ["r2", "s3", "b2", "ipfs", "arweave"],
+  "gc1:proofStrength": 8.2,
+  "gc1:certificateFingerprint": "0754e9bd6bcf5ea2...",
+  "gc1:infrastructureAttestation": {
+    "gc1:manifestHash": "sha256:...",
+    "gc1:attestationHash": "sha256:...",
+    "gc1:vendorCoverage": "11/11"
+  },
+  "gc1:verifyUrl": "https://guardianchain.io/verify/GC1-00004721",
+  "gc1:issuer": {
+    "@type": "Organization",
+    "name": "GuardianChain LLC",
+    "url": "https://guardianchain.io",
+    "founder": "Troy Anthony Cronin"
+  }
+}
+```
+
+---
+
+## Verification Algorithm
+
+Any party can verify a GC-1 Cap Block without trusting GuardianChain:
+
+```
+VERIFY(document, capBlock):
+  1. EXTRACT capBlock.contentHash
+  2. COMPUTE sha256(document_content_excluding_cap_block)
+  3. COMPARE computed_hash == capBlock.contentHash
+     → If mismatch: FAIL (content modified since capping)
+  4. FETCH blockchain transaction at capBlock.chains[i]
+     → Verify transaction exists on public block explorer
+     → Verify transaction data contains capBlock.contentHash
+  5. VERIFY Ed25519 signature on certificate
+     → Public key available at guardianchain.io/.well-known/gc1-keys
+  6. CHECK RFC 3161 timestamp
+     → Independent timestamp authority (FreeTSA, Sectigo)
+  7. RETURN { verified: true, cappedAt: timestamp, chains: confirmed[] }
+```
+
+**No login required. No API key required. No trust in GuardianChain required.**
+
+---
+
+## Constitutional Governance
+
+GC-1 is governed by 9 constitutional invariants enforced in code:
+
+| # | Invariant | Enforcement |
+|---|---|---|
+| 1 | **FAIL_CLOSED** | Any failure halts processing. No partial output. No silent degradation. |
+| 2 | **ZERO_AUTONOMY** | AI is read-only. No writes to truth records. No automated overrides. |
+| 3 | **NON_CUSTODIAL** | SHA-256 hashes only. Content never transmitted, stored, or seen. |
+| 4 | **HUMAN_FINALITY** | All consequential actions require human review and approval. |
+| 5 | **IMMUTABLE_EVIDENCE** | Sealed capsules can never be modified or deleted. |
+| 6 | **INDEPENDENT_VERIFICATION** | Any third party can verify without GuardianChain. |
+| 7 | **VENDOR_SURVIVAL** | Proof survives destruction of GuardianChain as a company. |
+| 8 | **CONSTITUTIONAL_SUPREMACY** | Constitutional rules override all other instructions. |
+| 9 | **INFRASTRUCTURE_ATOMICITY** | Blockchain anchoring and cloud storage are constitutionally inseparable. |
+
+These are enforced by **45 governance rails** — hard enforcement rules that cannot be bypassed except by the founder-architect (TIER_0 authority). Every rail evaluation is logged, signed, and anchored.
+
+---
+
+## Novel Capabilities
+
+### Infrastructure Atomicity
+Blockchain anchoring (6 chains) and cloud storage replication (5 providers) are cryptographically bound as one atomic operation. A **Dispatch Manifest** is signed before any vendor call fires, committing to all target vendors. An **Infrastructure Attestation Hash** binds all results after dispatch. A **Completion Receipt** proves the final vendor coverage.
+
+### Silent Witness
+Merkle-based cryptographic proof that something did NOT happen. If an AI system was supposed to perform a governance check and didn't, Silent Witness produces an independently verifiable absence certificate.
+
+### Proof of Restraint
+Cryptographic evidence that an AI system was actively prevented from taking an action. When a governance rail rejects an operation, the rejection itself is signed, timestamped, and anchored — proving the constraint was enforced.
+
+### Living Proof
+15 proof types that continuously verify GC-1's own operational integrity. The system that proves governance proves itself — hourly, automatically, blockchain-anchored. Types include: heartbeat, constitutional compliance, sovereign seal continuity, code seal, pipeline integrity, evidence strengthening, chain independence, storage replication, rate limit enforcement, domain isolation, non-retention, proof system integrity, absence verification, inference governance, and infrastructure atomicity.
 
 ### Evidence Weight Score
+8-input proof strength calculation (0-10 scale) measuring: chain count, storage count, temporal proof, certificate presence, governance rail evaluation, replication factor, timestamp authority, and vendor diversity.
 
-Each capsule receives an Evidence Weight score (0-10) based on:
-- Number of blockchain confirmations
-- Number of independent storage providers
-- RFC 3161 timestamp presence
-- Ed25519 signature validity
-- Anchor class tier
-
-A capsule anchored to all 6 chains with all 5 storage providers at SOVEREIGN_TIER_1 achieves Evidence Weight 10/10.
-
-## Unique Capabilities
-
-### Silent Witness — Proof of Absence
-
-GC-1 can mathematically prove that a specific event did NOT occur within a governed time window. Using Merkle tree indexing with absence certificates, Silent Witness generates cryptographic proof of non-occurrence.
-
-**Use case:** "Prove the AI did not access unauthorized patient records between 09:00 and 17:00."
-
-No other platform offers negative evidence with cryptographic proof.
-
-### Two-Phase Temporal Authority (Autonomous Decision Shield)
-
-For autonomous systems (drones, vehicles, surgical robots, industrial automation), GC-1 provides two-phase temporal proof:
-
-1. **Phase 1 (Authorization):** Human authorization is cryptographically sealed and blockchain-anchored.
-2. **Phase 2 (Execution):** Autonomous execution is sealed and linked to the Phase 1 capsule.
-3. **Governance Rail #44 (TEMPORAL_AUTHORITY_VERIFICATION):** Verifies that Phase 1 preceded Phase 2 with a minimum temporal delta per system type.
-
-Post-hoc authorization fabrication is architecturally detectable because blockchain timestamps are immutable.
-
-### Decision Chain Reconstruction
-
-```
-GET /api/truth/decision-chain/:systemId
-```
-
-Public API endpoint (no authentication required) that reconstructs the complete governance history of any autonomous system. Any congressional committee, federal judge, or attorney can query the full decision chain without GC-1 cooperation.
-
-### Recursive Self-Governance
-
-GC-1 governs itself with the same cryptographic rigor it demands of customers. Every deployment, boot attestation, sovereign seal, and governance rail enforcement generates a signed operational record anchored at SOVEREIGN_TIER_1. The stewardship manifest (an index of all operational records) is itself a signed, blockchain-anchored record — creating recursive integrity.
-
-### Vendor Survival Proof
-
-Complete Merkle trees are stored across 5 independent storage providers (Cloudflare R2, Backblaze B2, AWS S3, Arweave, IPFS). If GuardianChain ceases to exist, every piece of evidence remains independently verifiable using public blockchain explorers and distributed storage.
-
-## Regulatory Alignment
-
-GC-1 evidence infrastructure is designed for compliance with:
-
-| Regulation | Jurisdiction | Enforcement Date |
-|---|---|---|
-| EU AI Act (Regulation 2024/1689) — Articles 9-14 | European Union | August 2, 2026 |
-| Colorado AI Act (SB 24-205) | United States — Colorado | June 30, 2026 |
-| FDA QMSR (21 CFR 820 update) | United States | February 2, 2026 |
-| FRE 902(13)/(14) — Self-authenticating electronic records | United States (Federal) | Effective |
-| DoD Directive 3000.09 — Autonomous weapons systems | United States — Defense | Effective |
-| EU MDR (Regulation 2017/745) | European Union | Effective |
-| NYC Local Law 144 — Automated hiring | United States — New York City | Effective |
-
-## Integration
-
-### REST API
-
-```bash
-# Create a governance capsule
-curl -X POST https://gc1.guardianchain.com/api/capsules/v3/create \
-  -H "Authorization: Bearer $GC1_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "contentHash": "sha256-of-governance-event",
-    "anchorClass": "SOVEREIGN_TIER_1",
-    "metadata": {
-      "type": "COMPLIANCE_CHECK",
-      "framework": "EU_AI_Act",
-      "article": "9",
-      "result": "PASSED"
-    }
-  }'
-
-# Verify a capsule (public, no auth required)
-curl https://gc1.guardianchain.com/api/truth/verify/CAPSULE_ID
-
-# Reconstruct a decision chain (public, no auth required)
-curl https://gc1.guardianchain.com/api/truth/decision-chain/SYSTEM_ID
-```
-
-### MCP (Model Context Protocol) Integration
-
-GC-1 includes an MCP server with 20 governance tools, enabling any MCP-compatible AI agent (Claude, GPT, Gemini) to submit governance evidence during tool execution.
-
-### SDKs (Coming Q3 2026)
-
-- **Node.js:** `npm install @guardianchain-prod/gc1-sdk`
-- **Python:** `pip install guardianchain`
+---
 
 ## Production Metrics
 
 | Metric | Value |
 |---|---|
-| Total capsules sealed | 21,000+ |
-| Blockchain anchors | 1,352+ (1,060+ confirmed) |
-| Active blockchain chains | 6 (Base, Polygon, Ethereum, Optimism, Arbitrum, Arweave) |
-| Governance rails | 43+ (zero violations) |
-| Constitutional enforcement points | 1,888+ |
-| Tests | 940+ (zero failures) |
-| Storage providers | 5 configured |
-| Sovereign seal | Continuous |
+| Sealed records | 64,455+ |
+| Confirmed blockchain anchors | 15,000+ |
+| Governance rails | 45 (FAIL_CLOSED enforcement) |
+| Constitutional invariants | 9 |
+| Living Proof types | 15 |
+| Automated tests | 1,311 passing |
+| Sovereign seals | 327+ consecutive days |
+| Active blockchains | Base, Polygon, Ethereum, Optimism, Arbitrum, Arweave |
+| Storage providers | Cloudflare R2, AWS S3, Backblaze B2, Pinata IPFS, Arweave |
 
-## Comparison
+---
 
-| Capability | GC-1 | OneTrust | Credo AI | IBM watsonx | VeritasChain |
-|---|---|---|---|---|---|
-| Blockchain-anchored evidence | ✅ 6 chains | ❌ | ❌ | ❌ | Spec only |
-| Independent RFC 3161 timestamps | ✅ | ❌ | ❌ | ❌ | ✅ (spec) |
-| Negative evidence (Silent Witness) | ✅ Production | ❌ | ❌ | ❌ | ❌ |
-| Two-phase temporal authority | ✅ Production | ❌ | ❌ | ❌ | ❌ |
-| Non-custodial (zero content storage) | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Vendor-independent verification | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Public decision chain API | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Self-governance at sovereign tier | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Constitutional enforcement (code) | ✅ 1,888 points | ❌ | ❌ | ❌ | ❌ |
-| Production capsules | 21,000+ | N/A | N/A | N/A | 0 (demo only) |
+## Regulatory Alignment
 
-## Documentation
+GC-1 produces evidence infrastructure. It does not certify compliance — courts and regulators make those determinations. GC-1 provides the cryptographic evidence they need to verify.
 
-- [How GC-1 Works](https://guardianchain.io/gc1/how-it-works)
-- [What GC-1 Proves](https://guardianchain.io/gc1/what-it-proves)
-- [Sovereign Seals](https://guardianchain.io/gc1/sovereign-seals)
-- [Proof Explorer](https://guardianchain.io/gc1/explorer)
-- [Verify a Capsule](https://guardianchain.io/verify)
+| Regulation | GC-1 Evidence |
+|---|---|
+| **EU AI Act** (Aug 2, 2026) | Tamper-proof audit trails, human oversight proof, traceable documentation |
+| **Colorado AI Act** | Governance constraint evidence, algorithmic discrimination safeguards |
+| **NIST AI RMF** | GOVERN, MAP, MEASURE, MANAGE function evidence |
+| **SOC 2** | Continuous control evidence (Living Proof), processing integrity proof |
+| **GDPR** | Non-custodial design (no personal data stored), data portability |
 
-## About GuardianChain
+---
 
-GuardianChain LLC builds GC-1, cryptographic evidence infrastructure for AI governance. GC-1 is Layer 5 infrastructure — it sits beneath existing governance platforms (OneTrust, Credo AI, IBM watsonx, Microsoft Purview) and makes their attestations independently verifiable.
+## Integration
 
-- **Website:** [guardianchain.io](https://guardianchain.io)
-- **Production:** [gc1.guardianchain.com](https://gc1.guardianchain.com)
-- **Contact:** government@guardianchain.io
+### MCP (Model Context Protocol)
+
+Any MCP-compatible LLM (Claude, ChatGPT, VS Code, Cursor) can verify Cap Blocks:
+
+```
+gc1_verify_cap({ capId: "GC1-00004721" })
+→ { verified: true, cappedAt: "2026-03-28T20:30:34Z", chains: 6, storage: 5, proofStrength: 8.2 }
+
+gc1_explain_cap_block({ capId: "GC1-00004721" })
+→ { explanation: "This document was capped on March 28, 2026...", glossary: {...} }
+```
+
+### CLI
+
+```bash
+npm install -g @guardianchain/cap
+
+gc1 cap my-document.pdf                    # Cap a file (free)
+gc1 verify GC1-00004721                    # Verify a cap
+gc1 verify my-document.pdf --cap GC1-00004721  # Verify file against cap
+```
+
+### GitHub Action
+
+```yaml
+- uses: guardianchain/cap-action@v1
+  with:
+    api-key: ${{ secrets.GC1_KEY }}
+    files: README.md, dist/**
+```
+
+---
+
+## Glossary
+
+| Term | Definition |
+|---|---|
+| **Cap Block** | Multi-format embeddable proof artifact (5 formats) |
+| **Capsule** | Structured data commitment (hash + metadata, never content) |
+| **Proof of Restraint** | Cryptographic evidence of governed refusal |
+| **Silent Witness** | Merkle-based cryptographic proof of absence |
+| **Living Proof** | Continuous self-governance verification (15 types, hourly) |
+| **Infrastructure Atomicity** | Constitutional binding of blockchain anchoring + cloud storage |
+| **Dispatch Manifest** | Signed pre-dispatch vendor commitment |
+| **Evidence Weight Score** | 8-input proof strength calculation (0-10 scale) |
+| **Governance Envelope** | Pre-committed constraint set with parent-child hierarchy |
+| **Agent Passport** | Ed25519-signed portable AI credential |
+| **Sovereign Seal** | Daily composite integrity proof anchored to all vendors |
+| **Anchor Class** | Routing tier determining which chains receive the proof |
+| **FAIL_CLOSED** | System halts on uncertainty — no degraded mode |
+| **Constitutional Rail** | Hard enforcement rule — no bypass, no override except TIER_0 |
+
+---
+
+## Links
+
+- **Verify any cap**: [guardianchain.io/verify](https://guardianchain.io/verify)
+- **Cap your work**: [guardianchain.io/cap](https://guardianchain.io/cap)
+- **Protocol dashboard**: [guardianchain.io/gc1/proofs/all](https://guardianchain.io/gc1/proofs/all)
+- **Living Proof**: [guardianchain.io/gc1/living-proof](https://guardianchain.io/gc1/living-proof)
+- **Self-Governance**: [guardianchain.io/gc1/self-governance](https://guardianchain.io/gc1/self-governance)
+
+---
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+Protocol specification: CC BY 4.0
+Implementation: Proprietary (GuardianChain LLC)
 
-The GC-1 protocol specification and documentation in this repository are open. The production infrastructure is operated by GuardianChain LLC.
+---
+
+*GC-1 is cryptographic evidence infrastructure created by Troy Anthony Cronin, GuardianChain LLC. Operational since April 2025. 64,000+ sealed records anchored to 6 independent public blockchains + 5 cloud storage providers.*
